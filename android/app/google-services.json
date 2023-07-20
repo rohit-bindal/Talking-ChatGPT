@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "635559080419",
+    "project_id": "talking-chatgpt-545e5",
+    "storage_bucket": "talking-chatgpt-545e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635559080419:android:acb2d3d4150151b662f0d6",
+        "android_client_info": {
+          "package_name": "com.rohitbindal.talking_chatgpt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "635559080419-0cgofi9hic2d8jngjnvf0ahq5gguerjo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSECANqgxPmBHdXGXONI8JMVnWo7uDwO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "635559080419-0cgofi9hic2d8jngjnvf0ahq5gguerjo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
