@@ -5,18 +5,37 @@ import '../utils/conversation_card.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({Key? key}) : super(key: key);
-
   @override
   State<UserScreen> createState() => _UserScreenState();
 }
 
 class _UserScreenState extends State<UserScreen> {
+
   final _auth = FirebaseAuth.instance;
+  String conversationName = 'Talk with ChatGPT';
   String email = '';
   String password = '';
   bool showSpinner = false;
   List<ConversationCard> conversations = [];
   bool showConversations = false;
+  int id = 0;
+
+  void removeCard(int id){
+    int index = 0;
+    for(int i=0; i<conversations.length; i++){
+      if(conversations[i].id == id){
+        index = i;
+        break;
+      }
+    }
+    setState(() {
+      conversations.removeAt(index);
+    });
+  }
+
+  void navigateToChatScreen(String title){
+    Navigator.pushNamed(context, 'chat_screen', arguments: {'conversationName': title});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,38 +100,88 @@ class _UserScreenState extends State<UserScreen> {
                                       topRight: Radius.circular(55)
                                   )
                               ),
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 50),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Visibility(
-                                      visible: !showConversations,
-                                        child: Text(
-                                      "You don't have any conversation !",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 16
-                                          )
-                                    ),),
-                                    Visibility(
-                                      visible: showConversations,
-                                        child: Padding(
-                                      padding: EdgeInsets.all(50),
-                                      child: ListView(
-                                        children: conversations,
-                                      ),
-                                    ),),
-                                  ],
-                                )
+                              child: conversations.length==0 ? Center(
+                                child: Text("You don't have any conversation", style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w300
+                                ),),
+
+                              ) : Padding(
+                                padding: const EdgeInsets.only(left: 25, right:25, top:75, bottom: 25),
+                                child: ListView.builder(
+                                  itemCount: conversations.length,
+                                  itemBuilder: (context, index){
+                                    return conversations[index];
+                                  },
+                                ),
                               )
                           ),
                         ),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, 'chat_screen');
+                              showDialog(context: context, builder: (context){
+                                return Container(
+                                  child: AlertDialog(
+                                    backgroundColor: Color.fromRGBO(32, 33, 35, 1),
+                                    title: Text('Conversation Name', style: TextStyle(color: Colors.white),),
+                                    content: TextField(
+                                      maxLength: 30,
+                                      style: TextStyle(color: Colors.white),
+                                      onChanged: (value) {
+                                        conversationName=value;
+                                      },
+                                      decoration: InputDecoration(
+                                        counterStyle: TextStyle(color: Colors.white),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Color.fromRGBO(52, 53, 65, 1)),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Color.fromRGBO(117, 172, 157, 1)),
+                                        ),
+                                        hintText: 'Enter conversation name',
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(onPressed: (){
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          conversations.add(ConversationCard(
+                                            title: conversationName,
+                                            removeCard: removeCard,
+                                            id: id,
+                                            navigate: navigateToChatScreen,
+                                          ),
+                                          );
+                                          id++;
+                                          showConversations=true;
+                                        });
+                                        navigateToChatScreen(conversationName);
+                                      }, child: Center(
+                                        child: Container(
+                                            width: 230,
+                                            padding: EdgeInsets.all(17),
+                                            decoration: BoxDecoration(
+                                                color: Color.fromRGBO(117, 172, 157, 1),
+                                                borderRadius: BorderRadius.circular(8)
+                                            ),
+                                            child: const Center(
+                                              child: Text('Start Conversation',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 0.5
+                                                ),
+                                              ),
+                                            )
+                                        ),
+                                      ))
+                                    ],
+                                  )
+                                );
+                              });
                             },
                             child: Container(
                               color: Color.fromRGBO(32, 33, 35, 1),
@@ -142,3 +211,5 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 }
+
+final GlobalKey<_UserScreenState> userScreen = GlobalKey<_UserScreenState>();
