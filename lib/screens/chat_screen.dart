@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/message_bubble.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -21,12 +23,17 @@ class _ChatScreenState extends State<ChatScreen> {
   final _firestore = FirebaseFirestore.instance;
   User? loggedInUser;
   String message = '';
+  FlutterTts flutterTts = FlutterTts();
+  final speechToText = SpeechToText();
+  String lastWords = '';
+  Color recordingIconColor = Colors.white;
+  Color sendIconColor = Colors.white;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     var args = ModalRoute.of(context)?.settings?.arguments as Map<String,String>;
-    _streamSubscription =_firestore.collection((loggedInUser?.email).toString()).doc('convo').collection(args['conversationName'].toString()).snapshots().listen((event) {
+    _streamSubscription =_firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').doc(args['conversationName'].toString()).collection('messages').snapshots().listen((event) {
       setState(() {
       });
     });
@@ -34,15 +41,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _streamSubscription?.cancel();
     super.dispose();
+    _streamSubscription?.cancel();
+    speechToText.stop();
+  }
+
+  void initSpeech() async {
+    await speechToText.initialize();
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
     getCurrentUser();
-
   }
 
   void getCurrentUser() async{
@@ -55,12 +67,32 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+
+  void startListening() async {
+    await speechToText.listen(onResult: (result){
+      setState(() {
+        lastWords = result.recognizedWords;
+        messageTextController.text = lastWords;
+      });
+    });
+  }
+
+  void stopListening() async {
+    await speechToText.stop();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     var args = ModalRoute.of(context)?.settings?.arguments as Map<String,String>;
     return Scaffold(
       backgroundColor: Color.fromRGBO(32, 33, 35, 1),
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: (){
+            Navigator.pushNamed(context, 'user_screen');
+          },
+        ),
         elevation: 0,
         backgroundColor:  Color.fromRGBO(32, 33, 35, 1),
         title: Text(
@@ -77,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(flex:8, child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore.collection((loggedInUser?.email).toString()).doc('convo').collection(args['conversationName'].toString()).orderBy('Timestamp').snapshots(),
+                stream: _firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').doc(args['conversationName'].toString()).collection('messages').orderBy('Timestamp').snapshots(),
                 builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -108,17 +140,28 @@ class _ChatScreenState extends State<ChatScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     GestureDetector(
-                      onTap: (){
-                        print("voice recording started");
+                      onTap: () async {
+                        if(await speechToText.hasPermission && speechToText.isNotListening){
+                          setState(() {
+                            recordingIconColor = Colors.red;
+                          });
+                          startListening();
+                        }
+                        else if(speechToText.isListening){
+                          stopListening();
+                          setState(() {
+                            recordingIconColor = Colors.white;
+                          });
+                        }
+                        else{
+                          initSpeech();
+                        }
                       },
-                      child: Icon(Icons.keyboard_voice, color: Colors.white),),
+                      child: Icon(Icons.keyboard_voice, color: recordingIconColor),),
                     SizedBox(width: 18,),
                     Expanded(
                       child: TextField(
                         controller: messageTextController,
-                        onChanged: (value) {
-                          message=value;
-                        },
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
@@ -133,17 +176,39 @@ class _ChatScreenState extends State<ChatScreen> {
                     SizedBox(width: 18,),
                     GestureDetector(
                       onTap: () async {
-                        messageTextController.clear();
-                          await _firestore.collection((loggedInUser?.email).toString()).doc('convo').
-                        collection(args['conversationName'].toString()).add(
-                            {
-                              'sender': 'Chat GPT',
-                              'message': message,
-                              'Timestamp': FieldValue.serverTimestamp(),
-                            }
+                        if(!messageTextController.text.isEmpty) {
+                          setState(() {
+                            message = messageTextController.text;
+                            sendIconColor = Colors.green;
+                          });
+                          messageTextController.clear();
+                          await _firestore.collection('users').doc(
+                              (loggedInUser?.email).toString()).collection(
+                              'conversations').doc(
+                              args['conversationName'].toString()).
+                          collection('messages').add(
+                              {
+                                'sender': 'Chat GPT',
+                                'message': message,
+                                'Timestamp': FieldValue.serverTimestamp(),
+                              }
                           );
+                          setState(() {
+                            sendIconColor = Colors.white;
+                          });
+                        }
+                        else{
+                          setState(() {
+                            sendIconColor = Colors.red;
+                          });
+                          Future.delayed(Duration(seconds: 1), () {
+                            setState(() {
+                              sendIconColor = Colors.white;
+                            });
+                          });
+                        }
                       },
-                      child: Icon(Icons.send, color:Colors.white),)
+                      child: Icon(Icons.send, color:sendIconColor),)
                   ],
                 ),
               )

@@ -35,6 +35,8 @@ dependencies:
   cloud_firestore: ^4.8.2
   modal_progress_hud_nsn: ^0.4.0
   timer_snackbar: ^0.0.3
+  flutter_tts: ^3.7.0
+  speech_to_text: ^6.3.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

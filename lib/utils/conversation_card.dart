@@ -4,10 +4,9 @@ import '../screens/chat_screen.dart';
 
 class ConversationCard extends StatefulWidget {
   final String title;
-  final int id;
-  final void Function(int) removeCard;
+  final void Function(String) removeCard;
   final void Function(String) navigate;
-  const ConversationCard({Key? key, required this.title, required this.removeCard, required this.id, required this.navigate}) : super(key: key);
+  const ConversationCard({Key? key, required this.title, required this.removeCard, required this.navigate}) : super(key: key);
 
   @override
   State<ConversationCard> createState() => _ConversationCardState();
@@ -37,7 +36,7 @@ class _ConversationCardState extends State<ConversationCard> {
                     child: Icon(Icons.start, color: Colors.green,),),
                 SizedBox(width: 12,),
                 GestureDetector(
-                  onTap: () => widget.removeCard(widget.id),
+                  onTap: () => widget.removeCard(widget.title),
                   child: Icon(Icons.delete, color: Colors.red,),)
               ],
             )
