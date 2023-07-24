@@ -32,7 +32,7 @@ class _UserScreenState extends State<UserScreen> {
     // TODO: implement initState
     super.initState();
     getCurrentUser();
-    _streamSubscription =_firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').snapshots().listen((event) {
+    _streamSubscription =_firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').orderBy('timestamp').snapshots().listen((event) {
       setState(() {
       });
     });

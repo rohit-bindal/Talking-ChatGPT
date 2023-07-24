@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import '../utils/message_bubble.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:http/http.dart' as http;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -39,6 +41,37 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Future<String> getResponse(String prompt) async {
+    try {
+      final res = await http.post(
+          Uri.parse('https://api.openai.com/v1/chat/completions'),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": 'Bearer',
+          },
+          body: jsonEncode({
+            "model": "gpt-3.5-turbo",
+            "messages": [
+              {
+                "role": "user",
+                "content": prompt
+              }
+            ]
+          })
+      );
+
+      if(res.statusCode == 200){
+        String content = jsonDecode(res.body)['choices'][0]['message']['content'];
+        content = content.trim(); //sanitization
+        return content;
+      }
+    }
+    catch (e) {
+      return e.toString();
+    }
+    return '';
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -55,6 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
+    initSpeech();
   }
 
   void getCurrentUser() async{
@@ -81,6 +115,11 @@ class _ChatScreenState extends State<ChatScreen> {
     await speechToText.stop();
     setState(() {});
   }
+
+  Future<void> systemSpeak(String content) async {
+    await flutterTts.speak(content);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +227,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               args['conversationName'].toString()).
                           collection('messages').add(
                               {
-                                'sender': 'Chat GPT',
+                                'sender': 'You',
                                 'message': message,
                                 'Timestamp': FieldValue.serverTimestamp(),
                               }
@@ -196,6 +235,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           setState(() {
                             sendIconColor = Colors.white;
                           });
+                          await systemSpeak(message);
                         }
                         else{
                           setState(() {

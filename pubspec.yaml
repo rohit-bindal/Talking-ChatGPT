@@ -37,6 +37,7 @@ dependencies:
   timer_snackbar: ^0.0.3
   flutter_tts: ^3.7.0
   speech_to_text: ^6.3.0
+  http: ^1.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
