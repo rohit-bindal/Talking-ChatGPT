@@ -68,7 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
     Future.delayed(Duration.zero, () async {
       var args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
       Query<Map<String, dynamic>> collectionRef =  await _firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').doc(args?['conversationName'].toString()).collection('messages').orderBy('Timestamp');
-      try {
         QuerySnapshot querySnapshot = await collectionRef.get();
         querySnapshot.docs.forEach((doc) {
           if (doc.data() != null) {
@@ -78,10 +77,6 @@ class _ChatScreenState extends State<ChatScreen> {
               'content': data['message']
             });
           }});
-        print(conversations);
-      } catch (e) {
-        print("Error fetching data: $e");
-      }
     });
   }
 
@@ -280,7 +275,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                       'content': message
                                     });
                                   });
-                                  print(conversations);
                               }
                             }
                           }
