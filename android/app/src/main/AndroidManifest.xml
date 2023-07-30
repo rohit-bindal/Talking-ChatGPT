@@ -10,9 +10,9 @@
         </intent>
     </queries>
     <application
-        android:label="talking_chatgpt"
+        android:label="Talking ChatGPT"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/talking_chatgpt_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

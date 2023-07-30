@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:talking_chatgpt/screens/user_screen.dart';
-import '../screens/chat_screen.dart';
+import '../assets/constants.dart';
 
 class ConversationCard extends StatefulWidget {
   final String title;
@@ -21,7 +20,7 @@ class _ConversationCardState extends State<ConversationCard> {
         width: 100,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Color.fromRGBO(52, 53, 65, 1),
+          color: backgroundColor,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

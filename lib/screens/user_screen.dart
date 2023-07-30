@@ -1,10 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../utils/conversation_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../assets/constants.dart';
+import '../services/firebase/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({Key? key}) : super(key: key);
@@ -14,7 +16,6 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
 
-  final _auth = FirebaseAuth.instance;
   String conversationName = 'Talk with ChatGPT';
   String email = '';
   String password = '';
@@ -22,6 +23,7 @@ class _UserScreenState extends State<UserScreen> {
   List<ConversationCard> conversations = [];
   bool showConversations = false;
   int id = 0;
+  final FirebaseAuthService firebaseAuth = FirebaseAuthService();
   final _firestore = FirebaseFirestore.instance;
   User? loggedInUser;
   String duplicateTitle='';
@@ -31,39 +33,36 @@ class _UserScreenState extends State<UserScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCurrentUser();
-    _streamSubscription =_firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').orderBy('timestamp').snapshots().listen((event) {
+    Future.delayed(Duration.zero, () async {
+      loggedInUser = await firebaseAuth.getCurrentUser();
+    });
+    _streamSubscription = _firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').orderBy('timestamp').snapshots().listen((event) {
       setState(() {
       });
     });
   }
-
 
   void removeCard(String title) async {
     try{
       setState(() {
         showSpinner=true;
       });
-      await _firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations').doc(title).delete();
-      setState(() {
-        showSpinner=false;
-      });
-    }
-    catch (e) {
-      setState(() {
-        showSpinner=false;
-      });
-      print(e);
-    }
-  }
+      final collectionRef = _firestore.collection('users').doc((loggedInUser?.email).toString()).collection('conversations');
+      final subCollectionRef = collectionRef.doc(title).collection('messages');
+      final subCollectionSnapshot = await subCollectionRef.get();
+      for (final doc in subCollectionSnapshot.docs) {
+        await doc.reference.delete();
+      }
+      await subCollectionRef.parent!.delete();
 
-  void getCurrentUser() async{
-    try{
-      final user = await _auth.currentUser;
-      if(user != null) loggedInUser = user;
+      setState(() {
+        showSpinner=false;
+      });
     }
     catch (e) {
-      print(e);
+      setState(() {
+        showSpinner=false;
+      });
     }
   }
 
@@ -83,7 +82,7 @@ class _UserScreenState extends State<UserScreen> {
                       maxWidth: MediaQuery.of(context).size.width,
                       maxHeight: MediaQuery.of(context).size.height
                   ),
-                  color: Color.fromRGBO(52, 53, 65, 1),
+                  color: backgroundColor,
                   child: SafeArea(
                     child: Column(
                       children: [
@@ -98,7 +97,7 @@ class _UserScreenState extends State<UserScreen> {
                                       Image(
                                         width: 35,
                                         color: Colors.white,
-                                        image: AssetImage('assets/images/white_chatgpt_logo.png')
+                                        image: AssetImage('lib/assets/images/white_chatgpt_logo.png')
                                       ),
                                       Text(
                                       'Conversations',
@@ -110,7 +109,7 @@ class _UserScreenState extends State<UserScreen> {
                                     ),
                                       GestureDetector(
                                         onTap: () {
-                                          _auth.signOut();
+                                          firebaseAuth.signOut();
                                           Navigator.pushNamed(context, 'login_screen');
                                         },
                                         child: Icon(
@@ -128,7 +127,7 @@ class _UserScreenState extends State<UserScreen> {
                           child: Container(
                               width: double.infinity,
                               decoration: const BoxDecoration(
-                                  color: Color.fromRGBO(32, 33, 35, 1),
+                                  color: foregroundColor,
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(55),
                                       topRight: Radius.circular(55)
@@ -183,7 +182,7 @@ class _UserScreenState extends State<UserScreen> {
                                   child: StatefulBuilder(
                                     builder: (context, setState){
                                     return AlertDialog(
-                                      backgroundColor: Color.fromRGBO(32, 33, 35, 1),
+                                      backgroundColor: foregroundColor,
                                       title: Text('Conversation Name', style: TextStyle(color: Colors.white),),
                                       content: TextField(
                                         maxLength: 30,
@@ -205,7 +204,7 @@ class _UserScreenState extends State<UserScreen> {
                                           errorText: duplicateTitle.isEmpty ? null : duplicateTitle,
                                           counterStyle: TextStyle(color: Colors.white),
                                           enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Color.fromRGBO(52, 53, 65, 1)),
+                                            borderSide: BorderSide(color: backgroundColor),
                                           ),
                                           focusedBorder: UnderlineInputBorder(
                                             borderSide: BorderSide(color: Color.fromRGBO(117, 172, 157, 1)),
@@ -256,7 +255,7 @@ class _UserScreenState extends State<UserScreen> {
                               });
                             },
                             child: Container(
-                              color: Color.fromRGBO(32, 33, 35, 1),
+                              color: foregroundColor,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
