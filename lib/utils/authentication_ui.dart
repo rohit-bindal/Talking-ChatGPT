@@ -31,8 +31,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
   final FirebaseAuthService firebaseAuth = FirebaseAuthService();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: ScaffoldMessenger(
+    return ScaffoldMessenger(
           key: _scaffoldMessengerKey,
           child: Scaffold(
             body: ModalProgressHUD(
@@ -267,7 +266,6 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               ),
             ),
           ),
-        )
-    );
+        );
   }
 }

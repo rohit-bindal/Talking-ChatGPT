@@ -20,6 +20,7 @@ class TalkingChatGPT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: 'login_screen',
       routes: {
         'login_screen': (context) => const LoginScreen(),

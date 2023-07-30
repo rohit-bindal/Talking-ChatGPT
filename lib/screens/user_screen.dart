@@ -72,8 +72,7 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return Scaffold(
           body: ModalProgressHUD(
             inAsyncCall: showSpinner,
             child: SingleChildScrollView(
@@ -278,8 +277,7 @@ class _UserScreenState extends State<UserScreen> {
               ),
             ),
           ),
-        )
-    );
+        );
   }
 }
 
