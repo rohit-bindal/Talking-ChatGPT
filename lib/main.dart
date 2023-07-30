@@ -20,15 +20,14 @@ class TalkingChatGPT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: 'login_screen',
-      routes: {
-        'login_screen': (context) => const LoginScreen(),
-        'signup_screen': (context) => const SignupScreen(),
-        'user_screen': (context) => const UserScreen(),
-        'chat_screen': (context) => const ChatScreen(),
-        'forgot_password_screen': (context) => const  ForgotPasswordScreen(),
-      }
-    );
+        debugShowCheckedModeBanner: false,
+        initialRoute: 'login_screen',
+        routes: {
+          'login_screen': (context) => const LoginScreen(),
+          'signup_screen': (context) => const SignupScreen(),
+          'user_screen': (context) => const UserScreen(),
+          'chat_screen': (context) => const ChatScreen(),
+          'forgot_password_screen': (context) => const ForgotPasswordScreen(),
+        });
   }
 }

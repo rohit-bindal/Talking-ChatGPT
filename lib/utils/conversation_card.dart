@@ -5,7 +5,12 @@ class ConversationCard extends StatefulWidget {
   final String title;
   final void Function(String) removeCard;
   final void Function(String) navigate;
-  const ConversationCard({Key? key, required this.title, required this.removeCard, required this.navigate}) : super(key: key);
+  const ConversationCard(
+      {Key? key,
+      required this.title,
+      required this.removeCard,
+      required this.navigate})
+      : super(key: key);
 
   @override
   State<ConversationCard> createState() => _ConversationCardState();
@@ -25,21 +30,34 @@ class _ConversationCardState extends State<ConversationCard> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListTile(
-            title: Text(widget.title, style: TextStyle(color: Colors.white),),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(onTap: (){
-                  widget.navigate(widget.title);
-                },
-                    child: Icon(Icons.start, color: Colors.green,),),
-                SizedBox(width: 12,),
-                GestureDetector(
-                  onTap: () => widget.removeCard(widget.title),
-                  child: Icon(Icons.delete, color: Colors.red,),)
-              ],
-            )
-          ),
+              title: Text(
+                widget.title,
+                style: const TextStyle(color: Colors.white),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      widget.navigate(widget.title);
+                    },
+                    child: const Icon(
+                      Icons.start,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  GestureDetector(
+                    onTap: () => widget.removeCard(widget.title),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                  )
+                ],
+              )),
         ),
       ),
     );

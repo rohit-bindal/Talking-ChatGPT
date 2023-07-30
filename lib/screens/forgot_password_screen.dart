@@ -11,7 +11,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   final FirebaseAuthService firebaseAuth = FirebaseAuthService();
   String email = '';
   bool showSpinner = false;
@@ -23,7 +24,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor:foregroundColor,
+          backgroundColor: foregroundColor,
         ),
         backgroundColor: foregroundColor,
         body: ModalProgressHUD(
@@ -32,67 +33,80 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.lock, color:Colors.white, size: 70,),
-              SizedBox(height: 50,),
-              Text(
+              const Icon(
+                Icons.lock,
+                color: Colors.white,
+                size: 70,
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              const Text(
                 'Forgot your password?',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,),
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 5,),
-              Text("Enter your email below to receive your password reset instructions",
+              const SizedBox(
+                height: 5,
+              ),
+              const Text(
+                "Enter your email below to receive your password reset instructions",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                color: Colors.white,
-                  fontWeight: FontWeight.w300
-              ),),
-              SizedBox(height: 40,),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w300),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 50, right: 50),
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (String value) {
-                    email=value;
+                    email = value;
                   },
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: backgroundColor),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color.fromRGBO(117, 172, 157, 1)),
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(117, 172, 157, 1)),
                     ),
                     hintText: 'Enter your Email',
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
               ),
-              SizedBox(height: 40,),
+              const SizedBox(
+                height: 40,
+              ),
               GestureDetector(
                 onTap: () async {
                   try {
                     setState(() {
-                      showSpinner=true;
+                      showSpinner = true;
                     });
                     firebaseAuth.resetPassword(email);
                     setState(() {
-                      showSpinner=false;
+                      showSpinner = false;
                     });
                     _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Sent! Please check your mailbox.'),
                         duration: Duration(seconds: 4),
                       ),
                     );
-                  }
-                  catch (e) {
+                  } catch (e) {
                     setState(() {
-                      showSpinner=false;
+                      showSpinner = false;
                     });
                     _scaffoldMessengerKey.currentState?.showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Invalid email.'),
                         duration: Duration(seconds: 3),
                       ),
@@ -101,22 +115,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
                 child: Container(
                     width: 300,
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                        color: Color.fromRGBO(117, 172, 157, 1),
-                        borderRadius: BorderRadius.circular(8)
-                    ),
+                        color: const Color.fromRGBO(117, 172, 157, 1),
+                        borderRadius: BorderRadius.circular(8)),
                     child: const Center(
-                      child: Text('SEND',
+                      child: Text(
+                        'SEND',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5
-                        ),
+                            letterSpacing: 0.5),
                       ),
-                    )
-                ),
+                    )),
               )
             ],
           ),

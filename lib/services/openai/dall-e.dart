@@ -12,19 +12,13 @@ class DALLEService {
             "Content-Type": "application/json",
             "Authorization": 'Bearer $API_KEY',
           },
-          body: jsonEncode({
-            "prompt": prompt,
-            "n": 1,
-            "size":"512x512"
-          })
-      );
-      if(res.statusCode == 200){
+          body: jsonEncode({"prompt": prompt, "n": 1, "size": "512x512"}));
+      if (res.statusCode == 200) {
         String content = jsonDecode(res.body)['data'][0]['url'];
         content = content.trim();
         responseContent = content;
       }
-    }
-    catch (e) {
+    } catch (e) {
       responseContent = e.toString();
     }
     return responseContent;

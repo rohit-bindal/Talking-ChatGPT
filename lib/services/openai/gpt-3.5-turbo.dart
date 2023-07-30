@@ -12,20 +12,16 @@ class GPTService {
             "Content-Type": "application/json",
             "Authorization": 'Bearer $API_KEY',
           },
-          body: jsonEncode({
-            "model": "gpt-3.5-turbo",
-            "messages": prompt
-          })
-      );
+          body: jsonEncode({"model": "gpt-3.5-turbo", "messages": prompt}));
 
-      if(res.statusCode == 200){
-        String content = jsonDecode(res.body)['choices'][0]['message']['content'];
+      if (res.statusCode == 200) {
+        String content =
+            jsonDecode(res.body)['choices'][0]['message']['content'];
         content = content.trim(); //sanitization
         responseContent = content;
       }
-    }
-    catch (e) {
-      responseContent='';
+    } catch (e) {
+      responseContent = '';
     }
     return responseContent;
   }
