@@ -16,14 +16,14 @@ To solve all the problems mentioned above, I decided to develop the app "Talking
 
  * Users can first register on the application
  * After registration, users can login with the registered id
- * Pasword recovery system is also embedded
+ * Password recovery system is also embedded
  * Profile Screen
    * All your conversations will be displayed
    * If you don't have any conversation, it will display the text "You don't have any conversation"
    * Any conversation can be either resumed or deleted any time
    * You can start a New Conversation
  * Chat Screen
-    * Send the query either by writting or by just speaking it
+    * Send the query either by writing or by just speaking it
       * So, we no longer are required to write the complete query 🤩
     * ChatGPT will also speak its response
       * So, we no longer are required to read the complete response 🤩
